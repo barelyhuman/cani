@@ -1,48 +1,46 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
-import cani from "../src";
+import { createBouncer } from "../src";
 
-// use returned set of definition
-const { can } = cani.define(
-  "meetWife",
-  async (my: { id: number }, wife: { husbandId: number }) => {
-    return my.id === wife.husbandId;
-  }
-);
-
-// define other stuff somewhere before execution
-
-cani.define(
-  "meetWithGirlfriend",
-  async (my: { id: number; hasWife: true }, girlFriend: { bfId: number }) => {
-    return !my.hasWife && my.id === girlFriend.bfId;
-  }
-);
-
-test("Simple check should return true", async () => {
-  const canDo = await can.meetWife({ id: 1 }, { husbandId: 1 });
-  assert.ok(canDo);
+const { cani, combine } = createBouncer({
+  async isPostOwner({ user, post }) {
+    return user?.id === post?.userId;
+  },
+  async isAdmin({ user }) {
+    return user?.role === "ADMIN";
+  },
 });
 
-test("Simple check should return false", async () => {
-  const canDo = await can.meetWife({ id: 1 }, { husbandId: 2 });
-  assert.not.ok(canDo);
+test("Should only allow owner", async () => {
+  const allow = await cani("isPostOwner")({
+    user: { id: 1 },
+    post: { userId: 1 },
+  });
+
+  const notAllowed = await cani("isPostOwner")({
+    user: { id: 1 },
+    post: { userId: 2 },
+  });
+
+  assert.ok(allow);
+  assert.not.ok(notAllowed);
 });
 
-test("additional definitions should return true", async () => {
-  const canDo = await can.meetWithGirlfriend(
-    { id: 1, hasWife: false },
-    { bfId: 1 }
+test("should allow admin to delete only own post", async () => {
+  // FIX: handle different param function types
+  // @ts-ignore
+  const canDeletePost = await combine(
+    {
+      user: { role: "ADMIN", id: 1 },
+      post: {
+        userId: 1,
+      },
+    },
+    cani("isAdmin"),
+    cani("isPostOwner")
   );
-  assert.ok(canDo);
-});
 
-test("additional definitions should return false", async () => {
-  const canDo = await can.meetWithGirlfriend(
-    { id: 1, hasWife: true },
-    { bfId: 1 }
-  );
-  assert.not.ok(canDo);
+  assert.ok(canDeletePost);
 });
 
 test.run();

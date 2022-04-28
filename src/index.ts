@@ -1,16 +1,39 @@
-export type GuardAction = (...args: any[]) => Promise<boolean>;
+const _combine = async <
+  Actions extends {},
+  DataSources extends {},
+  Keys extends keyof Actions,
+  ActionExec extends Actions[Keys]
+>(
+  ...args: ActionExec[] | DataSources[]
+) => {
+  let source;
+  let result = true;
 
-function createCanI() {
-  const handlers = {} as Record<string, GuardAction>;
+  for (let i = 0; i < args.length; i++) {
+    const elm = args[i];
+
+    if (typeof elm === "object") {
+      source = elm;
+    }
+
+    if (typeof elm === "function") {
+      // @ts-ignore
+      result = result && (await elm(source));
+    }
+  }
+
+  return result;
+};
+
+export function createBouncer<Actions extends object>(actions: Actions) {
+  let handlers = actions;
+
+  const cani = <T extends keyof Actions>(key: T) => handlers[key];
+
+  const combine = <Actions>_combine;
+
   return {
-    define(name: string, action: GuardAction) {
-      handlers[name] = action;
-      return this;
-    },
-    can: handlers as Record<string, GuardAction>,
+    cani,
+    combine,
   };
 }
-
-const cani = createCanI();
-
-export default cani;
