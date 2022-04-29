@@ -1,8 +1,20 @@
-# Docs
+# CAN-I?
+
+[Home](/) &nbsp; [API](/api) &nbsp; [Github](https://github.com/barelyhuman/cani)
 
 ### API Reference
 
 [API Docs &rarr;](/api)
+
+### Getting Started
+
+#### Install
+
+```sh
+npm i @barelyhuman/cani
+# or
+yarn add @barelyhuman/cani
+```
 
 ### The Why
 

@@ -1,5 +1,7 @@
 # API
 
+[Home](/) &nbsp; [API](/api) &nbsp; [Github](https://github.com/barelyhuman/cani)
+
 ### `createBouncer`
 
 The factory function responsible to giving out usable auth checkers.

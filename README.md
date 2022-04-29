@@ -14,7 +14,7 @@ yarn add @barelyhuman/cani
 
 ### Docs
 
-[docs](https://cani.reaper.im)
+You can read them at the [Documentation website](https://cani.reaper.im) or by going to the `docs` folder in the repo
 
 ### License
 
