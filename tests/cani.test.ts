@@ -1,6 +1,6 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
-import { createBouncer } from "../src";
+import { combineAnd, createBouncer } from "../src";
 
 interface User {
   id: number;
@@ -11,7 +11,7 @@ interface Post {
   userId: number;
 }
 
-const { cani, combine } = createBouncer({
+const cani = createBouncer({
   async isPostOwner({ user, post }: { user: User; post: Post }) {
     return user.id === post.userId;
   },
@@ -36,7 +36,7 @@ test("Should only allow owner", async () => {
 });
 
 test("should allow admin to delete only own post", async () => {
-  const canDeletePost = combine(cani("isAdmin"), cani("isPostOwner"));
+  const canDeletePost = combineAnd(cani("isAdmin"), cani("isPostOwner"));
 
   const result = await canDeletePost({
     user: { role: "ADMIN", id: 1 },
