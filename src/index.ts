@@ -1,17 +1,18 @@
 export function createBouncer<Actions extends object>(actions: Actions) {
   let handlers = actions;
 
-  const cani = <T extends keyof Actions>(key: T) => handlers[key];
+  const cani = <ActionKey extends keyof Actions>(key: ActionKey) =>
+    handlers[key];
 
   const combine = <
-    T extends keyof Actions,
-    Sources extends Actions[T] | Function
+    ActionKey extends keyof Actions,
+    Sources extends Actions[ActionKey] | Function
   >(
     ...args: Sources[]
   ) => {
     let result = true;
 
-    return async <T extends {}>(source: T) => {
+    return async (source: unknown) => {
       for (let i = 0; i < args.length; i++) {
         const elm = args[i];
         if (typeof elm === "function") {
