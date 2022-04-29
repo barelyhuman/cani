@@ -1,10 +1,21 @@
 <p align="center">
   <img src="images/can-i.png" height="64">
-<p align="center"></p>
+<p align="center">Opinionated authorization wrapper</p>
 
-**NOTE**
-This isn't complete and the API will change at the drop of a hat. Stay far from it for now!
+Inspired from [adonis/bouncer](https://github.com/adonisjs/bouncer)
 
-The point of this is to not act as a wrapper that you can write in 2 lines but to be able to use it globally around the project and have autocomplete help you with the defintions created.
+### Install
 
-Wait, there's `is-even` as a package, I don't need to justify this.
+```sh
+npm i @barelyhuman/cani
+# or
+yarn add @barelyhuman/cani
+```
+
+### Docs
+
+[docs](https://cani.reaper.im)
+
+### License
+
+[MIT](/license) &copy; [Reaper](https://github.com/barelyhuman)
