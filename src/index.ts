@@ -1,16 +1,31 @@
-export type GuardAction = (...args: any[]) => Promise<boolean>;
+export function createBouncer<Actions extends object>(actions: Actions) {
+  let handlers = actions;
 
-function createCanI() {
-  const handlers = {} as Record<string, GuardAction>;
+  const cani = <ActionKey extends keyof Actions>(key: ActionKey) =>
+    handlers[key];
+
+  const combine = <
+    ActionKey extends keyof Actions,
+    Sources extends Actions[ActionKey] | Function
+  >(
+    ...args: Sources[]
+  ) => {
+    let result = true;
+
+    return async (source: unknown) => {
+      for (let i = 0; i < args.length; i++) {
+        const elm = args[i];
+        if (typeof elm === "function") {
+          result = result && (await elm(source));
+        }
+      }
+
+      return result;
+    };
+  };
+
   return {
-    define(name: string, action: GuardAction) {
-      handlers[name] = action;
-      return this;
-    },
-    can: handlers as Record<string, GuardAction>,
+    cani,
+    combine,
   };
 }
-
-const cani = createCanI();
-
-export default cani;

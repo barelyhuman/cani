@@ -1,7 +1,7 @@
 {
-  "name": "pkg",
+  "name": "@barelyhuman/cani",
   "version": "0.1.0",
-  "repository": "git@github.com:barelyhuman/pkg.git",
+  "repository": "git@github.com:barelyhuman/cani.git",
   "license": "MIT",
   "author": "Reaper <ahoy@barelyhuman.dev>",
   "exports": {
