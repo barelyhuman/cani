@@ -2,12 +2,21 @@ import { test } from "uvu";
 import * as assert from "uvu/assert";
 import { createBouncer } from "../src";
 
+interface User {
+  id: number;
+  role?: string;
+}
+
+interface Post {
+  userId: number;
+}
+
 const { cani, combine } = createBouncer({
-  async isPostOwner({ user, post }) {
-    return user?.id === post?.userId;
+  async isPostOwner({ user, post }: { user: User; post: Post }) {
+    return user.id === post.userId;
   },
-  async isAdmin({ user }) {
-    return user?.role === "ADMIN";
+  async isAdmin({ user }: { user: User }) {
+    return user.role === "ADMIN";
   },
 });
 
@@ -27,20 +36,16 @@ test("Should only allow owner", async () => {
 });
 
 test("should allow admin to delete only own post", async () => {
-  // FIX: handle different param function types
-  // @ts-ignore
-  const canDeletePost = await combine(
-    {
-      user: { role: "ADMIN", id: 1 },
-      post: {
-        userId: 1,
-      },
-    },
-    cani("isAdmin"),
-    cani("isPostOwner")
-  );
+  const canDeletePost = combine(cani("isAdmin"), cani("isPostOwner"));
 
-  assert.ok(canDeletePost);
+  const result = await canDeletePost({
+    user: { role: "ADMIN", id: 1 },
+    post: {
+      userId: 1,
+    },
+  });
+
+  assert.ok(result);
 });
 
 test.run();
